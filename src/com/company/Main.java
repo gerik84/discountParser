@@ -1,21 +1,16 @@
 package com.company;
 
-import com.company.work.Tools;
-import com.company.work.api.ConnManager;
-import com.company.work.worker.PkaWorker;
-
-import java.io.IOException;
+import com.company.work.db.DBHelper;
 
 public class Main {
 
     public static void main(String[] args) {
 
 
-        try {
-            new PkaWorker().start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        DBHelper.init();
+
+        DBHelper.insertPka(123, "firs", "small", "big", 123f, 110f, "1+1", "1+1 type");
+
 
 
       /*  try {
