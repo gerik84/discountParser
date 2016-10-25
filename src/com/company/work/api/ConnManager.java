@@ -81,12 +81,15 @@ public class ConnManager {
 
     public void send() throws IOException {
 
-      if (m_listener != null) {
-            m_listener.onSuccess(m_con.getResponseCode(), sendSync());
+        InputStream stream = sendSync();
+        if (m_listenerIo != null) {
+            m_listenerIo.onSuccess(m_con.getResponseCode(), stream);
+        } else if (m_listener != null) {
+            m_listener.onSuccess(m_con.getResponseCode(), iSteamToString(stream));
         }
     }
 
-    public String sendSync() throws IOException {
+    public InputStream sendSync() throws IOException {
 
         System.out.println("Request URL: " + m_url);
 
@@ -102,13 +105,13 @@ public class ConnManager {
         m_con.setRequestMethod(m_method.toString());
 
         m_con.setRequestProperty("Accept", "*/*");
-       // m_con.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
-       // m_con.setRequestProperty("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3");
+        // m_con.setRequestProperty("Accept-Encoding", "gzip, deflate, br");
+        // m_con.setRequestProperty("Accept-Language", "ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3");
         m_con.setRequestProperty("Cookie", "_ga=GA1.2.1160797675.1475656592; location_id=1814; _gat=1");
         m_con.setRequestProperty("Host", "5ka.ru");
         m_con.setRequestProperty("Referer", "https://5ka.ru/special_offers/?records_per_page=15&page=1");
         m_con.setRequestProperty("User-Agent", mUserAgent);
-        return iSteamToString(m_con.getInputStream());
+        return m_con.getInputStream();
     }
 
     private <T extends HttpURLConnection> HttpURLConnection openConnection(Proxy proxy) throws IOException {
@@ -130,10 +133,10 @@ public class ConnManager {
     }
 
     private boolean isHttps(URLConnection connection) {
-        return  connection instanceof HttpsURLConnection;
+        return connection instanceof HttpsURLConnection;
     }
 
-    public static String iSteamToString (InputStream is) throws IOException {
+    public static String iSteamToString(InputStream is) throws IOException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(is, "utf-8"));
         String inputLine;
@@ -151,20 +154,26 @@ public class ConnManager {
             throw new ClassCastException("connection not class HttpsURLConnection");
 
         try {
-            ((HttpsURLConnection)m_con).setHostnameVerifier(new HostnameVerifier(){
+            ((HttpsURLConnection) m_con).setHostnameVerifier(new HostnameVerifier() {
                 public boolean verify(String hostname, SSLSession session) {
                     return true;
-                }});
+                }
+            });
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, new X509TrustManager[]{new X509TrustManager(){
+            context.init(null, new X509TrustManager[]{new X509TrustManager() {
                 public void checkClientTrusted(X509Certificate[] chain,
-                                               String authType) throws CertificateException {}
+                                               String authType) throws CertificateException {
+                }
+
                 public void checkServerTrusted(X509Certificate[] chain,
-                                               String authType) throws CertificateException {}
+                                               String authType) throws CertificateException {
+                }
+
                 public X509Certificate[] getAcceptedIssuers() {
                     return new X509Certificate[0];
-                }}}, new SecureRandom());
-            ((HttpsURLConnection)m_con).setSSLSocketFactory(
+                }
+            }}, new SecureRandom());
+            ((HttpsURLConnection) m_con).setSSLSocketFactory(
                     context.getSocketFactory());
         } catch (Exception e) { // should never happen
             e.printStackTrace();

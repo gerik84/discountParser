@@ -18,7 +18,7 @@ abstract public class BaseWorker {
 
     protected abstract String baseUrl();
     protected abstract String apiUrl();
-    protected abstract void run(String response) throws IOException;
+    protected abstract void run(InputStream response) throws IOException;
 
     public String getUrl() {
 

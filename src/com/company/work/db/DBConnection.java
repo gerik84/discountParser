@@ -3,9 +3,7 @@ package com.company.work.db;
 import com.company.Config;
 import com.company.work.Tools;
 
-import java.math.BigInteger;
 import java.sql.*;
-import java.util.UUID;
 
 /**
  * Created by Pavel G on 14.10.2016.
@@ -51,41 +49,40 @@ class DBConnection {
         return false;
     }
 
-    public static Builder create(String query) throws SQLException {
+    static Builder createStatement(String query) throws SQLException {
         return new Builder(query);
     }
 
-    public static class Builder {
+    static class Builder {
 
-        private PreparedStatement mPrepareStetment;
+        private PreparedStatement mPrepareStatement;
         int position = 1;
 
-        private Builder (String query) throws SQLException {
-            mPrepareStetment =  DBConnection.getInstance().mConnection.prepareStatement(query);
+        private Builder(String query) throws SQLException {
+            mPrepareStatement = DBConnection.getInstance().mConnection.prepareStatement(query);
         }
 
-        public Builder setArg(String arg) throws SQLException {
-            mPrepareStetment.setString(position++, arg);
+        Builder setArg(String arg) throws SQLException {
+            mPrepareStatement.setString(position++, arg);
             return this;
         }
 
-        public Builder setArg(Integer arg) throws SQLException {
-            mPrepareStetment.setInt(position++, arg);
+        Builder setArg(Integer arg) throws SQLException {
+            mPrepareStatement.setInt(position++, arg);
             return this;
         }
 
-        public Builder setArg(Float arg) throws SQLException {
-            mPrepareStetment.setFloat(position++, arg);
+        Builder setArg(Float arg) throws SQLException {
+            mPrepareStatement.setFloat(position++, arg);
             return this;
         }
 
-        public PreparedStatement build() {
-            return mPrepareStetment;
+        PreparedStatement build() {
+            return mPrepareStatement;
         }
 
 
     }
-
 
 
 }

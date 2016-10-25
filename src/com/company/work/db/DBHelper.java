@@ -27,23 +27,11 @@ public class DBHelper {
         DBConnection.getInstance().execute(pka);
     }
 
-
-    /**
-     * @param region_id
-     * @param name
-     * @param image_small
-     * @param image_big
-     * @param regular_price
-     * @param discount_price
-     * @param discount_name
-     * @param discount_type
-     * @return
-     */
     public static boolean insertPka(Integer region_id, String name, String image_small, String image_big, Float regular_price, Float discount_price, String discount_name, String discount_type) {
         String insert = "INSERT INTO pka (`id`, `region_id`, `name`, `image_small`, `image_big`, `regular_price`, `discount_price`, `discount_name`, `discount_type`) VALUES(?,?,?,?,?,?,?,?,?)";
         try {
             PreparedStatement preparedStatement = DBConnection
-                    .create(insert)
+                    .createStatement(insert)
                     .setArg(UUID.randomUUID().toString())
                     .setArg(region_id)
                     .setArg(name)
